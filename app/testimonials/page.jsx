@@ -3,7 +3,6 @@
 import adminAxios from '@/axios/adminAxios'
 import Button from '@/components/Button'
 import Table from '@/components/Table'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
@@ -21,19 +20,6 @@ function page() {
         })
     }, [reload])
 
-    // const Testimonials = [
-    //     { user: 'Adam', message: 'Hello!! Good Service', id: 1 },
-    //     { user: 'Arijith singh', message: 'Hello!! Good Service', id: 2 },
-    //     { user: 'Shreya Ghoshal', message: 'Hello!! Good Service', id: 3 },
-    //     { user: 'Sithara', message: 'Hello!! Good Service', id: 4 },
-    //     { user: 'Adam', message: 'Hello!! Good Service', id: 5 },
-    //     { user: 'Arijith singh', message: 'Hello!! Good Service', id: 6 },
-    //     { user: 'Shreya Ghoshal', message: 'Hello!! Good Service', id: 7 },
-    //     { user: 'Sithara', message: 'Hello!! Good Service', id: 8 },
-    //     { user: 'Adam', message: 'Hello!! Good Service', id: 9 },
-    //     { user: 'Arijith singh', message: 'Hello!! Good Service', id: 10 },
-    //     { user: 'Shreya Ghoshal', message: 'Hello!! Good Service', id: 11 },
-    // ]
 
     const tableHead = ['USER', 'MESSAGE']
 

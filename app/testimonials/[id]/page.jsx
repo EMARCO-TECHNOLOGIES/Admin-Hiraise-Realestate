@@ -2,8 +2,6 @@
 
 import Form from '@/components/Form'
 import LoadingComponent from '@/components/LoadingComponent'
-// import { Form } from 'formik'
-import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 function page() {

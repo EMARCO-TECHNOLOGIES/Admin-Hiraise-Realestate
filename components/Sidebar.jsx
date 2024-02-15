@@ -15,7 +15,6 @@ function Side() {
     const [selected, setSelected] = useState(path ? path : 'banner')
 
     const menuItems = [
-        // { icon: 'bx-home', name: 'Home', redirect: '/' },
         { icon: 'bx-slider', name: 'Banner', redirect: '/banner' },
         { icon: 'bx-building', name: 'Properties', redirect: '/properties' },
         { icon: 'bx-user-voice', name: 'Testimonials', redirect: '/testimonials' },

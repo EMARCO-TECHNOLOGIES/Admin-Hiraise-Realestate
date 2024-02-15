@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 
 export function middleware(request) {
     const token = request.cookies.get('userToken')?.value
-    console.log(request.nextUrl.pathname.startsWith('/login'), 'hellooo', token)
 
     if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')) {
         if (token) {

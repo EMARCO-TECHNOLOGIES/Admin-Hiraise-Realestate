@@ -8,10 +8,9 @@ function page() {
         { name: 'Price', type: 'text' },
         { name: 'Location / Address', type: 'textField' },
         { name: 'Sub_title', type: 'text' },
-        { name: 'Bed Rooms', type: 'number' },
+        { name: 'Bed_space', type: 'number' },
         { name: 'Toilets', type: 'number' },
-        { name: 'Image', type: 'file' },
-        { name: 'Multiple Photos', type: 'file' },
+        { name: 'Image', type: 'file', count: 5 },
 
 
     ]
