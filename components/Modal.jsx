@@ -11,11 +11,6 @@ function Modal({ btnName, onAccept, id, btnStyle, component }) {
     const [img, setImg] = useState('')
     const [show, setShow] = useState(false)
 
-    const handleImage = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            setImg(URL.createObjectURL(event.target.files[0]));
-        }
-    }
 
 
     const modalAccept = () => {

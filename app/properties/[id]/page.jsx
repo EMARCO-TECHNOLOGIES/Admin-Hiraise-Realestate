@@ -13,7 +13,9 @@ function page() {
         { name: 'Price', type: 'text' },
         { name: 'Location', type: 'textField' },
         { name: 'Sub_title', type: 'text' },
-        { name: 'Image', type: 'file' },
+        { name: 'Bed_space', type: 'number' },
+        { name: 'Toilet', type: 'number' },
+        { name: 'Image', type: 'file', count: 5 },
 
     ]
 
@@ -30,6 +32,7 @@ function page() {
                     <Form editDataApiEndPoint={'propertyById'} inputFields={inputFields} endPoint={'editProperty'} />
                 }
             </div>
+
         </div>
     )
 }

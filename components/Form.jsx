@@ -9,6 +9,7 @@ import axios from 'axios'
 import { baseUrl } from '@/utils/baseUrl'
 import adminAxios from '@/axios/adminAxios'
 import LoadingComponent from './LoadingComponent'
+import Upload from './Upload'
 
 
 
@@ -21,7 +22,11 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
     const [isLoading, setLoading] = useState(false)
     const [isSubmit, setIsSubmit] = useState(false)
     const [img, setImg] = useState('')
-    const [photos, setPhotos] = useState([])
+    const [imgUrl, setImgUrl] = useState('')
+    const [photos, setPhotos] = useState('')
+    const [allPhotos, setAllPhotos] = useState('')
+    const [reload, setReload] = useState(false)
+
 
     const id = pathName.split('/')[2]
 
@@ -31,7 +36,16 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
             setLoading(true)
             adminAxios.get(`/${editDataApiEndPoint}`, { params: { id } }).then((res) => {
                 setEditData(res?.data?.fetchedData)
-                setImg(res?.data?.fetchedData?.image)
+                setImg(res?.data?.fetchedData?.photos)
+
+                if (pathName.split('/')[1] === 'properties') {
+
+                    setPhotos(res?.data?.fetchedData?.photos)
+                    setAllPhotos(res?.data?.fetchedData?.photos)
+                } else {
+                    setPhotos({ url: res?.data?.fetchedData?.image, publicId: res?.data?.fetchedData?.image_public_id })
+                    setAllPhotos({ url: res?.data?.fetchedData?.image, publicId: res?.data?.fetchedData?.image_public_id })
+                }
             }).catch((err) => {
                 console.log(err)
             }).finally(
@@ -41,33 +55,10 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
             )
         }
 
-    }, [])
+    }, [reload])
 
 
-    const handleImage = (setFieldValue, event) => {
 
-
-        if (event.target.files && event.target.files[0]) {
-            if (event.target.files.length === 1) {
-
-                console.log(typeof (event.target.files), '{{{{{{{{{{', event.target.files.length)
-                setImg(URL.createObjectURL(event.target.files[0]));
-                setFieldValue("image", event.target.files[0])
-
-            } else {
-
-                const images = []
-                for (let index = 0; index < event.target.files.length; index++) {
-                    images.push(URL.createObjectURL(event.target.files[index]))
-                }
-                setPhotos(images);
-                console.log(images, '||||||||||||||||', photos)
-            }
-
-        }
-    }
-
-    console.log(photos, 'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKk')
     const generateInitialValues = () => {
         const initialValues = {};
 
@@ -81,6 +72,8 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
 
 
     const path = pathName.split('/')[2]
+    const isPropertyRoute = pathName.split('/')[1]
+
 
     const router = useRouter()
     return (
@@ -97,15 +90,13 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
                         <div className='w-full'>
 
                             <Formik
-                                // initialValues={{ name: data ? data?.name : '', image: ''}}
                                 initialValues={generateInitialValues()}
                                 validate={(values, event) => {
                                     const errors = {}
                                     inputFields.forEach((item, index) => {
 
                                         if (item.name === 'Image') {
-                                            if (!values.image || !img) {
-                                                errors.image = 'Upload photo to continue'
+                                            if (imgUrl.length === 0) {
                                             }
 
                                         } else {
@@ -116,48 +107,60 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
 
 
                                     })
-
                                     return errors
                                 }}
 
                                 onSubmit={(values) => {
-                                    console.log(values, ':::::::::::::::')
-                                    setLoading(true)
-                                    console.log('After setLoading(true):', isSubmit);
+
 
                                     try {
 
-                                        const formData = new FormData();
-                                        Object.keys(values).map((item, index) => {
-                                            formData.append(item, values[item]);
+                                        if (isPropertyRoute === 'properties' && allPhotos.length === 0 || isPropertyRoute != 'properties' && isPropertyRoute != 'testimonials' && !values.image) {
+                                            toast.error('Upload atleast one photo to create property')
 
-                                        })
+                                        } else {
 
-                                        axios.post(`${baseUrl}${endPoint}`, formData ? formData : values, {
-                                            params: editData ? { id: id } : null,
 
-                                        })
-                                            .then((res) => {
-                                                if (res.data.success === true) {
 
-                                                    toast.success(path === 'create' ? `${pathName.split('/')[1]} added successfully` : `${pathName.split('/')[1]} updated successfully`)
-                                                    setTimeout(() => {
-                                                        router.back()
-                                                    }, 700);
-
+                                            setLoading(true)
+                                            const formData = new FormData();
+                                            Object.keys(values).map((item, index) => {
+                                                if (item === 'images') {
+                                                    values[item].forEach((image, i) => {
+                                                        formData.append(`images`, image);
+                                                    });
                                                 } else {
-                                                    toast.error(res.data.message)
-
+                                                    formData.append(item, values[item]);
                                                 }
+                                            });
 
-                                            }).catch((err) => {
-                                                console.log(err)
+                                            axios.post(`${baseUrl}${endPoint}`, values, {
+                                                params: editData ? { id: id, photos: allPhotos } : { photos: allPhotos },
 
                                             })
+                                                .then((res) => {
+                                                    if (res.data.success === true) {
+
+                                                        toast.success(path === 'create' ? `${pathName.split('/')[1]} added successfully` : `${pathName.split('/')[1]} updated successfully`)
+                                                        setTimeout(() => {
+                                                            router.back()
+                                                        }, 700);
+
+                                                    } else {
+                                                        toast.error(res.data.message)
+
+                                                    }
+
+                                                }).catch((err) => {
+                                                    console.log(err)
+                                                    setLoading(false)
+
+
+                                                })
+                                        }
+
                                     } catch (err) {
                                         console.log(err)
-                                    } finally {
-                                        setIsSubmit(false)
                                     }
 
                                 }}
@@ -173,69 +176,34 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
                                     handleSubmit,
                                     setFieldValue
                                 }) => (
-                                    <form className="space-y-6 px-6 lg:p-8 pb-4  sm:pb-6 xl:pb-8 flex flex-col justify-center" onSubmit={handleSubmit}  >
+                                    <form className="space-y-6 px-6 lg:p-8 pb-4  sm:pb-6 xl:pb-8 flex flex-col justify-center" onSubmit={handleSubmit} >
                                         <h3 className="text-xl font-medium text-gray-900 dark:text-white ">{path === 'create' ? `Create new ${pathName.split('/')[1].charAt(0).toUpperCase()}${pathName.split('/')[1].slice(1)}` : `Update ${pathName.split('/')[1].charAt(0).toUpperCase()}${pathName.split('/')[1].slice(1)}`}</h3>
                                         <div className={`grid ${pathName.split('/')[1] === 'properties' ? 'md:grid-cols-2' : 'md:grid-cols-1 w-1/3'} gap-10`}>
 
                                             {inputFields?.map((field, indx) => (
 
                                                 field.type === 'file' ? (
-                                                    <div key={indx} className="grid grid-cols-1 gap-x-5 text-xs text-red-500 ">
-                                                        {
+                                                    field.name === 'Image' ?
 
+                                                        isPropertyRoute === 'properties' ?
+                                                            <div className='grid md:grid-cols-3 gap-5'>
+                                                                <Upload photos={photos ? photos[0] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
+                                                                <Upload photos={photos ? photos[1] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
+                                                                <Upload photos={photos ? photos[2] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
+                                                                <Upload photos={photos ? photos[3] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
+                                                                <Upload photos={photos ? photos[4] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
+                                                                <Upload photos={photos ? photos[5] : null} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} />
 
-                                                            img ? (
-                                                                // field.name === 'Image' ? (
-                                                                <div className='relative flex flex-col justify-center space-y-5 '>
-                                                                    <img src={img} width={300} height={300} alt={values.image} className='w-[400px] h-40 object-cover ' />
-                                                                    <span onClick={() => setImg('')} className='  font-bold cursor-pointer' title='remove Photo'>Remove Photo</span>
-                                                                </div>
-                                                                //     ) : (
+                                                            </div>
+                                                            :
+                                                            <Upload photos={photos} setPhotos={setPhotos} itemId={id} setReload={setReload} reload={reload} setAllPhotos={setAllPhotos} allPhotos={allPhotos} setImg={setImg} setFieldValue={setFieldValue} />
 
+                                                        :
 
-                                                                //     <div className='relative grid grid-cols-3 gap-2 p-5 '>
-                                                                //         {photos.map((item, imgIndex) => (
-                                                                //             <>
-                                                                //                 {/* {console.log(item)} */}
-                                                                //                 <img src={item} width={300} height={300} alt={item} className='w-[200px] h-32 object-contain ' />
-                                                                //                 <p onClick={() => photos.pop([imgIndex])} className='  font-bold cursor-pointer' title='remove Photo'>x</p>
-                                                                //             </>
+                                                        <div>
 
-                                                                //         ))}
-                                                                //     </div>
-                                                                // )
-
-
-                                                            ) : (
-                                                                <div key={indx} className=''>
-                                                                    <label className="text-sm font-bold text-gray-500 tracking-wide">Attach {field.name}</label>
-                                                                    <div className="flex items-center justify-center w-full">
-                                                                        <label className="flex flex-col rounded-lg border-4 border-dashed w-full h-60 p-10 group text-center">
-                                                                            <div className="h-full w-full text-center flex flex-col items-center justify-center   ">
-                                                                                <div className="flex flex-auto max-h-48 w-2/5 mx-auto -mt-10">
-                                                                                    <img className="has-mask h-36 object-center" src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg" alt="freepik image" />
-                                                                                </div>
-                                                                                <p className="pointer-none text-gray-500 "><span className="text-sm">Drag and drop</span> files here <br /> or <a href="" id="" className="text-blue-600 hover:underline">select a file</a> from your computer</p>
-                                                                            </div>
-                                                                            <div className=' '>
-
-                                                                                <input type="file" name={field.name.toLowerCase()} id='image' className="hidden"
-                                                                                    onChange={(event) => handleImage(setFieldValue, event)}
-                                                                                    onBlur={handleBlur}
-                                                                                    value={img}
-                                                                                    multiple={field.name === 'Multiple Photos' ? true : false}
-                                                                                />
-                                                                            </div>
-
-                                                                        </label>
-                                                                    </div>
-                                                                    <span className='block text-yellow-600'>*Note: Upload landscape images for better view</span>
-                                                                    {errors.image && touched.image && errors.image}
-                                                                    {/* {errors[field.name.toLowerCase()] && touched[field.name.toLowerCase()] && errors[field.name.toLowerCase()]} */}
-
-                                                                </div>
-                                                            )}
-                                                    </div>
+                                                            <ImageUpload count={field.count} imgUrl={imgUrl} setImgUrl={setImgUrl} />
+                                                        </div>
                                                 ) : field.type === 'textArea' ? (
                                                     <div key={indx} className='text-xs text-red-500 '>
                                                         <label htmlFor="name" className="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">{field.name}</label>
@@ -269,7 +237,6 @@ function Form({ editDataApiEndPoint, inputFields, endPoint, }) {
 
                                             {isSubmit === true ? <LoadingComponent /> :
                                                 <button type="submit" className="  text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" disabled={isLoading}>{isLoading ? `Loading..${isLoading}` : path === 'create' ? 'Create' : 'Update'}</button>
-                                                // null
                                             }
                                         </div>
 

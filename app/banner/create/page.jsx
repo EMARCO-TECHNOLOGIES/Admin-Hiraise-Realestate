@@ -1,6 +1,4 @@
 import Form from '@/components/Form'
-import Header from '@/components/Header'
-import Sidebar from '@/components/Sidebar'
 import React from 'react'
 
 function page() {
@@ -8,7 +6,7 @@ function page() {
 
     const inputFields = [
         { name: 'Name', type: 'text' },
-        { name: 'Image', type: 'file' },
+        { name: 'Image', type: 'file', count: 1 },
 
     ]
 

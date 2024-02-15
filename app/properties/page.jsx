@@ -21,21 +21,7 @@ function page() {
     }, [reload])
 
 
-    // const propertyList = [
-    //     { name: 'Tranquil Haven in the Woods', image: '/Properties/property1.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Popular', id: 1 },
-    //     { name: 'Serene Retreat by the Lake', image: '/Properties/property2.png', price: 'Rs 5,970', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'New Listing', id: 2 },
-    //     { name: 'Charming Cottage in the Meadow', image: '/Properties/property3.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Discounted Price', id: 3 },
-    //     { name: 'Tranquil Haven in the Woods', image: '/Properties/property1.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Popular', id: 4 },
-    //     { name: 'Serene Retreat by the Lake', image: '/Properties/property2.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'New Listing', id: 5 },
-    //     { name: 'Charming Cottage in the Meadow', image: '/Properties/property3.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Discounted Price', id: 6 },
-    //     { name: 'Tranquil Haven in the Woods', image: '/Properties/property1.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Popular', id: 7 },
-    //     { name: 'Serene Retreat by the Lake', image: '/Properties/property2.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'New Listing', id: 8 },
-    //     { name: 'Charming Cottage in the Meadow', image: '/Properties/property3.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Discounted Price', id: 9 },
-    //     { name: 'Tranquil Haven in the Woods', image: '/Properties/property1.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'Popular', id: 10 },
-    //     { name: 'Serene Retreat by the Lake', image: '/Properties/property2.png', price: 'Rs 5,970', location: '103 Wright CourtBurien, WA 98168', sub_title: 'New Listing', id: 11 },
-    // ]
-
-    const tableHead = ['NAME', 'IMAGE', 'PRICE', 'LOCATION', 'SUB_TITLE']
+    const tableHead = ['NAME', 'IMAGE', 'PRICE', 'LOCATION', 'SUB_TITLE', 'BED_SPACE', 'TOILET',]
 
 
     const router = useRouter()
